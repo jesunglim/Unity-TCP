@@ -82,7 +82,7 @@ public class networkManager : MonoBehaviour
             else
             {
                 // Convert the received string of data to the format we are using
-                position = 10f * StringToVector3(dataReceived);
+                position += StringToVector3(dataReceived);
                 print("moved");
                 nwStream.Write(buffer, 0, bytesRead);
             }
@@ -90,22 +90,31 @@ public class networkManager : MonoBehaviour
     }
 
     // Use-case specific function, need to re-write this to interpret whatever data is being sent
-    public static Vector3 StringToVector3(string sVector)
+    public static Vector3 StringToVector3(string sKey)
     {
+        Vector3 result = new Vector3(0f, 0f, 0f);
         // Remove the parentheses
-        if (sVector.StartsWith("(") && sVector.EndsWith(")"))
+        if (sKey.StartsWith("(") && sKey.EndsWith(")"))
         {
-            sVector = sVector.Substring(1, sVector.Length - 2);
+            sKey = sKey.Substring(1, sKey.Length - 2);
         }
 
-        // Split the elements into an array
-        string[] sArray = sVector.Split(',');
-
-        // Store as a Vector3
-        Vector3 result = new Vector3(
-            float.Parse(sArray[0]),
-            float.Parse(sArray[1]),
-            float.Parse(sArray[2]));
+        if (sKey == "w")
+        {
+            result.z = 1f;
+        }
+        else if (sKey == "s")
+        {
+            result.z = -1f;
+        }
+        else if (sKey == "a")
+        {
+            result.x = -1;
+        }
+        else if (sKey == "d")
+        {
+            result.x = 1f;
+        }
 
         return result;
     }
